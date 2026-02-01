@@ -1,37 +1,43 @@
-// מספר וואטסאפ בפורמט בינלאומי (ישראל)
 const phoneE164 = "972549024970";
 
 const challenges = [
-  { label: "📸 תמונה מההתנדבות" },
-  { label: "🧸 חפץ שמתאר את התחושה שלי" },
-  { label: "😂 סיפור משעשע מההתנדבות" },
-  { label: "🎵 שיר שמתאר את ההתנדבות" },
-  { label: "💡 טיפ למבחנים או להתנדבות" }
+  { icon: "📸", text: "תמונה מההתנדבות" },
+  { icon: "🧸", text: "חפץ שמתאר את מצבך במבחנים" },
+  { icon: "😂", text: "סיפור משעשע מההתנדבות" },
+  { icon: "🎵", text: "שיר שמתאר את ההתנדבות" },
+  { icon: "💡", text: "טיפ למבחנים / התנדבות" }
 ];
 
-// צבעים עדינים סביב כחול/ורוד
-const colors = ["#1f2a5a", "#c50a86", "#283a78", "#e21aa0", "#16204a"];
-const textColor = "#ffffff";
+// צבעים פסטליים (בהירים)
+const colors = ["#ffd9c2", "#ffc2c2", "#e3c2c3", "#d8c7fa", "#c2cdff"];
+const stroke = "rgba(31,42,90,.10)";
+const textColor = "#1f2a5a"; // כחול לוגו
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
+const confCanvas = document.getElementById("confetti");
+const confCtx = confCanvas.getContext("2d");
+
 const spinBtn  = document.getElementById("spinBtn");
 const waBtn    = document.getElementById("waBtn");
-const againBtn = document.getElementById("againBtn");
 const resultEl = document.getElementById("result");
 
-// ציור הגלגל
 const center = canvas.width / 2;
-const radius = center - 18;
+const radius = center - 22;
 const slice = (Math.PI * 2) / challenges.length;
 
+let currentRotation = 0;
+let spinning = false;
+let chosenIndex = null;
+
+// ---------- ציור גלגל ----------
 function drawWheel(rotationRad = 0){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   // רקע
   ctx.beginPath();
-  ctx.arc(center, center, radius+10, 0, Math.PI*2);
+  ctx.arc(center, center, radius+16, 0, Math.PI*2);
   ctx.fillStyle = "#ffffff";
   ctx.fill();
 
@@ -40,6 +46,7 @@ function drawWheel(rotationRad = 0){
     const start = rotationRad + i*slice;
     const end   = start + slice;
 
+    // פלח
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, end);
@@ -47,38 +54,39 @@ function drawWheel(rotationRad = 0){
     ctx.fillStyle = colors[i % colors.length];
     ctx.fill();
 
-    // טקסט
-    ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate(start + slice/2);
+    // קו מפריד דק
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 6;
+    ctx.stroke();
 
-    ctx.textAlign = "right";
+    // ----- טקסט ואייקון: בלי סיבוב, תמיד ישר -----
+    const mid = start + slice/2;
+
+    // נקודת מרכז הפלח (כמה פנימה כדי לא להתנגש בשפה)
+    const rText = radius * 0.68;
+    const x = center + Math.cos(mid) * rText;
+    const y = center + Math.sin(mid) * rText;
+
+    // אייקון למעלה
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillStyle = textColor;
-    ctx.font = "bold 34px Arial";
 
-    ctx.fillText(challenges[i].label, radius - 28, 12);
+    ctx.font = "32px Heebo, Arial";
+    ctx.fillText(challenges[i].icon, x, y - 16);
 
-    ctx.restore();
+    // טקסט מתחת
+    ctx.font = "800 20px Heebo, Arial";
+    ctx.fillText(challenges[i].text, x, y + 18);
   }
 
   // טבעת חיצונית
   ctx.beginPath();
   ctx.arc(center, center, radius, 0, Math.PI*2);
-  ctx.strokeStyle = "rgba(31,42,90,.20)";
+  ctx.strokeStyle = "rgba(31,42,90,.18)";
   ctx.lineWidth = 10;
   ctx.stroke();
-
-  // נקודה פנימית
-  ctx.beginPath();
-  ctx.arc(center, center, 10, 0, Math.PI*2);
-  ctx.fillStyle = "rgba(255,255,255,.9)";
-  ctx.fill();
 }
-
-// מצב סיבוב
-let currentRotation = 0;
-let spinning = false;
-let chosenLabel = null;
 
 drawWheel(currentRotation);
 
@@ -91,16 +99,66 @@ function pickResultIndex(finalRotation){
   return Math.floor(angle / slice) % challenges.length;
 }
 
+// ---------- קונפטי ----------
+function launchConfetti(){
+  const el = confCanvas;
+  el.style.opacity = "1";
+
+  const W = confCanvas.width, H = confCanvas.height;
+  const pieces = Array.from({length: 90}, () => ({
+    x: W/2 + (Math.random()*120 - 60),
+    y: H/2 + (Math.random()*40 - 20),
+    vx: Math.random()*10 - 5,
+    vy: Math.random()*-10 - 6,
+    g: 0.35 + Math.random()*0.15,
+    r: 3 + Math.random()*4,
+    a: 1,
+    c: ["#c50a86","#1f2a5a","#ffbfe6","#dbeafe","#ede9fe"][Math.floor(Math.random()*5)]
+  }));
+
+  const start = performance.now();
+  const dur = 900;
+
+  function frame(now){
+    const t = Math.min(1, (now-start)/dur);
+    confCtx.clearRect(0,0,W,H);
+
+    pieces.forEach(p=>{
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a = 1 - t;
+
+      confCtx.globalAlpha = Math.max(0, p.a);
+      confCtx.beginPath();
+      confCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      confCtx.fillStyle = p.c;
+      confCtx.fill();
+    });
+
+    confCtx.globalAlpha = 1;
+
+    if (t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      confCtx.clearRect(0,0,W,H);
+      el.style.opacity = "0";
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+// ---------- סיבוב ----------
 function spin(){
   if (spinning) return;
 
   spinning = true;
   spinBtn.disabled = true;
   waBtn.disabled = true;
-  againBtn.disabled = true;
   resultEl.textContent = "";
 
-  const extraSpins = 6 + Math.random()*3; // 6-9
+  const extraSpins = 6 + Math.random()*3;
   const targetOffset = Math.random() * (2*Math.PI);
   const start = currentRotation;
   const end = currentRotation + extraSpins*(2*Math.PI) + targetOffset;
@@ -119,12 +177,15 @@ function spin(){
       requestAnimationFrame(frame);
     } else {
       currentRotation = end % (2*Math.PI);
-      const idx = pickResultIndex(currentRotation);
-      chosenLabel = challenges[idx].label;
+      chosenIndex = pickResultIndex(currentRotation);
 
-      resultEl.textContent = "🎉 האתגר שלך: " + chosenLabel;
+      const chosen = challenges[chosenIndex];
+      const chosenLabel = `${chosen.icon} ${chosen.text}`; // ✅ אין יותר undefined
+
+      resultEl.textContent = `🎉 האתגר שלך: ${chosenLabel}`;
       waBtn.disabled = false;
-      againBtn.disabled = false;
+
+      launchConfetti();
 
       spinning = false;
       spinBtn.disabled = false;
@@ -135,7 +196,10 @@ function spin(){
 }
 
 function sendWhatsApp(){
-  if (!chosenLabel) return;
+  if (chosenIndex === null) return;
+
+  const chosen = challenges[chosenIndex];
+  const chosenLabel = `${chosen.icon} ${chosen.text}`;
 
   const message =
 `היי! התנדבתי בתקופת מבחנים 🙌
@@ -150,4 +214,3 @@ ${chosenLabel}
 
 spinBtn.addEventListener("click", spin);
 waBtn.addEventListener("click", sendWhatsApp);
-againBtn.addEventListener("click", spin);

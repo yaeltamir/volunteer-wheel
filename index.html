@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>גלגל אתגרי התנדבות</title>
 
+  <!-- פונט עברי נקי -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
@@ -12,36 +17,35 @@
   <div class="wrap">
 
     <header class="top">
-      <div class="brand">
-        <img src="assets/images/tozeretLogo.png" alt="תוצרת הארץ" />
-      </div>
-
-      <div class="micro">
-        התנדבת בתקופת מבחנים? מסובבים פעם אחת 🎡<br/>
-        שולחים את התוצר בוואטסאפ → נכנסים להגרלה 🎁
+      <img class="logo" src="assets/images/tozeretLogo.png" alt="תוצרת הארץ" />
+      <div class="title">
+        <h1>התנדבת בתקופת מבחנים?</h1>
+        <p>מסובבים את ה- 🎡 שולחים ב- 💬 ו... נכנסים להגרלה!!🎁 </p>
       </div>
     </header>
 
     <main class="stage">
       <div class="wheel-wrap">
         <div class="pointer" aria-hidden="true"></div>
-
         <canvas id="wheel" width="900" height="900"></canvas>
 
         <div class="hub">
-          <button id="spinBtn" type="button">SPIN</button>
+          <button id="spinBtn" type="button">האתגר שלי...</button>
         </div>
+
+        <!-- קונפטי -->
+        <canvas id="confetti" class="confetti" width="900" height="900" aria-hidden="true"></canvas>
       </div>
 
       <div id="result" class="result" aria-live="polite"></div>
 
-      <div class="actions">
-        <button id="waBtn" class="btn btn-wa" disabled>שלח בוואטסאפ ✅</button>
-        <button id="againBtn" class="btn btn-ghost" disabled>סיבוב נוסף (לא חובה)</button>
-      </div>
+      <p class="tiny">
+       שליחת האתגר וכניסה להגרלה 
+      </p>
+      <button id="waBtn" class="btn btn-wa" disabled>שלח בוואטסאפ ✅</button>
 
       <p class="tiny">
-        טיפ: לא חייבים פנים בתמונה. אפשר לצלם חפץ/ידיים/סביבה, או לכתוב טקסט בלבד 🙂
+        לא חייבים פנים בתמונה. אפשר חפץ/סביבה/טקסט בלבד 🙂
       </p>
     </main>
 
