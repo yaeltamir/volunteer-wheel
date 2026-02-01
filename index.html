@@ -1,135 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>גלגל אתגרי התנדבות</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f4f2;
-      text-align: center;
-      padding: 28px 14px;
-      color: #222;
-    }
-    .card{
-      max-width: 560px;
-      margin: 0 auto 18px auto;
-      background: #fff;
-      border-radius: 16px;
-      padding: 18px 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    }
-    h2{ margin: 0 0 10px 0; }
-    p{ margin: 8px 0; line-height: 1.5; }
-    #wheel {
-      width: 320px;
-      height: 320px;
-      border-radius: 50%;
-      border: 10px solid #ff9f1c;
-      margin: 14px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      background: linear-gradient(135deg, #ffffff, #fff3e0);
-      user-select: none;
-    }
-    .btn {
-      margin-top: 14px;
-      padding: 12px 18px;
-      font-size: 18px;
-      background: #ff9f1c;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      width: 280px;
-      max-width: 90%;
-    }
-    .btn:disabled{
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    #result {
-      margin-top: 14px;
-      font-size: 20px;
-      font-weight: bold;
-      white-space: pre-line;
-    }
-    .hint {
-      font-size: 14px;
-      color: #555;
-      margin-top: 8px;
-    }
-    .wa {
-      background: #25D366;
-    }
-  </style>
+
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
+  <div class="wrap">
 
-  <div class="card">
-    <h2>🎡 גלגל אתגרי ההתנדבות</h2>
-    <p>
-      התנדבתם בתקופת מבחנים? אלופים 🙌<br>
-      כדי להפוך את זה לכיף (ולקבל כרטיס להגרלה),
-      אתם מסובבים גלגל ומקבלים אתגר קצר לשתף.
-    </p>
-    <p class="hint">
-      מסובבים פעם אחת → שולחים בוואטסאפ את התוצר לפי מה שיצא לכם → נכנסים להגרלה 🎁
-    </p>
+    <header class="top">
+      <div class="brand">
+        <img src="assets/images/tozeretLogo.png" alt="תוצרת הארץ" />
+      </div>
+
+      <div class="micro">
+        התנדבת בתקופת מבחנים? מסובבים פעם אחת 🎡<br/>
+        שולחים את התוצר בוואטסאפ → נכנסים להגרלה 🎁
+      </div>
+    </header>
+
+    <main class="stage">
+      <div class="wheel-wrap">
+        <div class="pointer" aria-hidden="true"></div>
+
+        <canvas id="wheel" width="900" height="900"></canvas>
+
+        <div class="hub">
+          <button id="spinBtn" type="button">SPIN</button>
+        </div>
+      </div>
+
+      <div id="result" class="result" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="waBtn" class="btn btn-wa" disabled>שלח בוואטסאפ ✅</button>
+        <button id="againBtn" class="btn btn-ghost" disabled>סיבוב נוסף (לא חובה)</button>
+      </div>
+
+      <p class="tiny">
+        טיפ: לא חייבים פנים בתמונה. אפשר לצלם חפץ/ידיים/סביבה, או לכתוב טקסט בלבד 🙂
+      </p>
+    </main>
+
   </div>
 
-  <div id="wheel">לחצו על SPIN 🎯</div>
-
-  <button class="btn" onclick="spin()">SPIN</button>
-
-  <div id="result"></div>
-
-  <button id="waBtn" class="btn wa" onclick="sendWhatsApp()" disabled>
-    שלח בוואטסאפ ✅
-  </button>
-
-  <div class="hint">
-    אם הכפתור לא נפתח (חוסמי פופ־אפים/דפדפן), פשוט העתיקו את הטקסט ותשלחו ידנית 🙂
-  </div>
-
-<script>
-  const phoneE164 = "972549024970"; // 0549024970 -> 972 + 54...
-  const challenges = [
-    "📸 תמונה מההתנדבות",
-    "🧸 חפץ שמתאר את התחושה שלי",
-    "😂 סיפור משעשע מההתנדבות",
-    "🎵 שיר שמתאר את ההתנדבות",
-    "💡 טיפ למבחנים או להתנדבות"
-  ];
-
-  let chosenChallenge = null;
-
-  function spin() {
-    chosenChallenge = challenges[Math.floor(Math.random() * challenges.length)];
-    document.getElementById("result").innerText =
-      "🎉 האתגר שלך:\n" + chosenChallenge + "\n\nכדי להיכנס להגרלה – שלח/י בוואטסאפ את התוצר לפי האתגר 😊";
-
-    document.getElementById("waBtn").disabled = false;
-    document.getElementById("waBtn").scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  function sendWhatsApp() {
-    if (!chosenChallenge) return;
-
-    const message =
-`היי! התנדבתי בתקופת מבחנים 🙌
-סובבתי את גלגל האתגרים ויצא לי:
-${chosenChallenge}
-
-הנה התוצר שלי:`;
-
-    const url = "https://wa.me/" + phoneE164 + "?text=" + encodeURIComponent(message);
-    window.open(url, "_blank");
-  }
-</script>
-
+  <script src="js/app.js" defer></script>
 </body>
 </html>
