@@ -72,11 +72,11 @@ function drawWheel(rotationRad = 0){
     ctx.textBaseline = "middle";
     ctx.fillStyle = textColor;
 
-    ctx.font = "32px Heebo, Arial";
+    ctx.font = '32px "Heebo", sans-serif';
     ctx.fillText(challenges[i].icon, x, y - 16);
 
     // טקסט מתחת
-    ctx.font = "800 20px Heebo, Arial";
+    ctx.font = '800 20px "Heebo", sans-serif';
     ctx.fillText(challenges[i].text, x, y + 18);
   }
 
@@ -88,7 +88,19 @@ function drawWheel(rotationRad = 0){
   ctx.stroke();
 }
 
-drawWheel(currentRotation);
+// לצייר רק אחרי שהפונט נטען (כדי שהטקסט בגלגל יהיה באותו פונט)
+(async function init(){
+  try{
+    if (document.fonts && document.fonts.load) {
+      await document.fonts.load('800 20px "Heebo"');
+      await document.fonts.load('32px "Heebo"');
+    }
+  } catch (e) {
+    // אם לא נטען – נמשיך עם fallback
+  }
+  drawWheel(currentRotation);
+})();
+
 
 function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
 

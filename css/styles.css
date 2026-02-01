@@ -185,6 +185,11 @@ body{
   transition: transform .08s ease;
 }
 
+.btn, .hub button{
+  font-family: "Heebo", Arial, sans-serif;
+}
+
+
 .btn:active{ transform: translateY(1px); }
 
 .btn-wa{
