@@ -201,7 +201,7 @@ function spin(){
       `;
 
       // resultEl.textContent = `🎉 האתגר שלך: <br> ${chosenLabel}`;
-      // waBtn.disabled = false;
+      waBtn.disabled = false;
 
       launchConfetti();
 
