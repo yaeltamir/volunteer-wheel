@@ -222,7 +222,7 @@ body{
 }
 
 /* --- רספונסיביות מובייל: לוגו מעל, טקסט מתחת --- */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .top {
     flex-direction: column;
     align-items: center;
