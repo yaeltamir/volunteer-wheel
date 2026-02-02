@@ -221,6 +221,16 @@ body{
   opacity:0;
 }
 
+.footer{
+  margin-top: 6px;
+  direction: ltr;
+  text-align: center;
+  font-size: 12px;
+  color: #6a6a86;
+  opacity: .7;
+}
+
+
 @media (max-width: 700px) {
   .top{
     flex-direction: column;
