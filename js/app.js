@@ -192,10 +192,16 @@ function spin(){
       chosenIndex = pickResultIndex(currentRotation);
 
       const chosen = challenges[chosenIndex];
-      const chosenLabel = `${chosen.icon} ${chosen.text}`; // ✅ אין יותר undefined
+      const chosenLabel = `${chosen.text} ${chosen.icon}`; // ✅ אין יותר undefined
 
-      resultEl.textContent = `🎉 האתגר שלך: ${chosenLabel}`;
-      waBtn.disabled = false;
+
+      resultEl.innerHTML = `
+         האתגר שלך: 🎉 <br>
+        <span class="result-value">${chosenLabel}</span>
+      `;
+
+      // resultEl.textContent = `🎉 האתגר שלך: <br> ${chosenLabel}`;
+      // waBtn.disabled = false;
 
       launchConfetti();
 
