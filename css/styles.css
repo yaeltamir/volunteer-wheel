@@ -189,8 +189,12 @@ body{
   font-family: "Heebo", Arial, sans-serif;
 }
 
-
 .btn:active{ transform: translateY(1px); }
+
+.btn-form{
+  background: #1f2a5a; /* כחול */
+  color: #fff;
+}
 
 .btn-wa{
   background:#25D366;

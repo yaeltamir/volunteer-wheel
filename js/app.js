@@ -8,6 +8,8 @@ const challenges = [
   { icon: "💡", text: "טיפ למבחנים / התנדבות" }
 ];
 
+const weights = [10, 1, 2, 3, 1];
+
 // צבעים פסטליים (בהירים)
 const colors = ["#ffd9c2", "#ffc2c2", "#e3c2c3", "#d8c7fa", "#c2cdff"];
 const stroke = "rgba(31,42,90,.10)";
@@ -21,15 +23,23 @@ const confCtx = confCanvas.getContext("2d");
 
 const spinBtn  = document.getElementById("spinBtn");
 const waBtn    = document.getElementById("waBtn");
+const formBtn = document.getElementById("formBtn");
 const resultEl = document.getElementById("result");
 
 const center = canvas.width / 2;
 const radius = center - 22;
 const slice = (Math.PI * 2) / challenges.length;
 
+const FORM_BASE_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSc5GmXFJgC0RE5bJWibs-0ga1D5IfkufvZOP8pVzEQDzOUIlw/viewform";
+
+const ENTRY_RESULT = "entry.1193308041";
+
+
 let currentRotation = 0;
 let spinning = false;
 let chosenIndex = null;
+
 
 // ---------- ציור גלגל ----------
 function drawWheel(rotationRad = 0){
@@ -101,6 +111,15 @@ function drawWheel(rotationRad = 0){
   drawWheel(currentRotation);
 })();
 
+function pickWeightedIndex(ws){
+  const total = ws.reduce((a,b)=>a+b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < ws.length; i++){
+    r -= ws[i];
+    if (r <= 0) return i;
+  }
+  return ws.length - 1;
+}
 
 function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
 
@@ -168,10 +187,21 @@ function spin(){
   spinning = true;
   spinBtn.disabled = true;
   waBtn.disabled = true;
+  formBtn.disabled = true;
   resultEl.textContent = "";
 
   const extraSpins = 6 + Math.random()*3;
-  const targetOffset = Math.random() * (2*Math.PI);
+  // ✅ בוחרים מראש לאיזה פלח נרצה להגיע (בהטיה)
+  const desiredIndex = pickWeightedIndex(weights);
+
+  // מחשבים את הזווית המדויקת שתגרום למחט לבחור את desiredIndex
+  const pointerAngle = -Math.PI / 2;
+  const a = (desiredIndex + 0.5) * slice;                // אמצע הפלח
+  const desiredMod = (pointerAngle + 2*Math.PI - a + 2*Math.PI) % (2*Math.PI);
+
+  // offset שיביא אותנו בדיוק ל-desiredMod בסוף הסיבוב
+  const targetOffset = (desiredMod - (currentRotation % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+
   const start = currentRotation;
   const end = currentRotation + extraSpins*(2*Math.PI) + targetOffset;
 
@@ -187,7 +217,8 @@ function spin(){
 
     if (t < 1){
       requestAnimationFrame(frame);
-    } else {
+    }
+    else {
       currentRotation = end % (2*Math.PI);
       chosenIndex = pickResultIndex(currentRotation);
 
@@ -202,6 +233,7 @@ function spin(){
 
       // resultEl.textContent = `🎉 האתגר שלך: <br> ${chosenLabel}`;
       waBtn.disabled = false;
+      formBtn.disabled = false;
 
       launchConfetti();
 
@@ -212,6 +244,22 @@ function spin(){
 
   requestAnimationFrame(frame);
 }
+
+function openForm(){
+  if (chosenIndex === null) return;
+
+  const chosen = challenges[chosenIndex];
+  const chosenLabel = `${chosen.icon} ${chosen.text}`;
+
+  const url =
+    `${FORM_BASE_URL}?usp=pp_url&${ENTRY_RESULT}=` +
+    encodeURIComponent(chosenLabel);
+
+  window.open(url, "_blank");
+}
+
+formBtn.addEventListener("click", openForm);
+
 
 function sendWhatsApp(){
   if (chosenIndex === null) return;
